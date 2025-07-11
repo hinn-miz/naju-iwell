@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ulsan-efete.netlify.app/sitemap.xml

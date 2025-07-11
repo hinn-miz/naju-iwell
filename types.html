@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>평형정보 | 나주 아이웰 리버파크</title>
+  <link rel="stylesheet" href="/assets/css/style.css" />
+  <!-- 파비콘 -->
+<link rel="icon" href="/assets/images/favicon.png" type="image/png" />
+  <style>
+    .type-selector {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .type-btn {
+      padding: 0.6rem 1.2rem;
+      margin: 0 0.5rem;
+      border: 1px solid #ccc;
+      background-color: white;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 999px;
+      transition: 0.2s;
+    }
+
+    .type-btn.active {
+      background-color: #b78e7d;
+      color: white;
+      border-color: #b78e7d;
+    }
+
+    .type-image { display: none; }
+    .type-image.visible { display: block; }
+
+    .desktop-only { display: block; }
+    .mobile-only { display: none; }
+
+    @media (max-width: 768px) {
+      .desktop-only { display: none; }
+      .mobile-only { display: block; }
+    }
+    .type-btn {
+      display: inline-block;
+      margin: 0.4rem 0.3rem;
+    }
+    .info-section {
+      padding: 4rem 1.5rem;
+      background-color: #f9f9f9;
+    }
+
+    .info-section .container {
+      max-width: 1200px;
+      margin: auto;
+      display: block;
+      padding: 0 1rem;
+    }
+
+    .type-image img {
+      width: 100%;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- ✅ 헤더 컴포넌트 -->
+  <div id="header-include"></div>
+
+  <main class="main-section">
+    <section class="info-section">
+      <div class="container">
+        <div class="type-selector">
+          <button class="type-btn active" data-type="1">84㎡ A</button>
+          <button class="type-btn" data-type="2">84㎡ B</button>
+          <button class="type-btn" data-type="3">110㎡</button>
+        </div>
+
+        <div class="type-image-wrap">
+          <div class="type-image type-1 visible">
+            <img src="/assets/images/unit_1.png" class="desktop-only" alt="119㎡ A (PC)" />
+            <img src="/assets/images/unit_m1.png" class="mobile-only" alt="119㎡ A (Mobile)" />
+            <img src="/assets/images/unit_m1-1.png" class="mobile-only" alt="119㎡ A (Mobile)" />
+          </div>
+
+          <div class="type-image type-2">
+            <img src="/assets/images/unit_2.png" class="desktop-only" alt="119㎡ B (PC)" />
+            <img src="/assets/images/unit_m2.png" class="mobile-only" alt="119㎡ B (Mobile)" />
+            <img src="/assets/images/unit_m2-1.png" class="mobile-only" alt="119㎡ A (Mobile)" />
+          </div>
+
+          <div class="type-image type-3">
+            <img src="/assets/images/unit_3.png" class="desktop-only" alt="119㎡ C (PC)" />
+            <img src="/assets/images/unit_m3.png" class="mobile-only" alt="119㎡ C (Mobile)" />
+            <img src="/assets/images/unit_m3-1.png" class="mobile-only" alt="119㎡ A (Mobile)" />
+          </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ✅ 푸터 컴포넌트 -->
+  <div id="footer-include"></div>
+  <!-- ✅ 플로팅 버튼 컴포넌트 -->
+  <div id="floating-button-include"></div>
+
+  <!-- ✅ 공통 컴포넌트 JS 삽입 + 햄버거 메뉴 처리 -->
+  <script>
+    async function loadComponent(id, path, callback) {
+      try {
+        const res = await fetch(path);
+        if (!res.ok) throw new Error("Fetch failed");
+        const html = await res.text();
+        document.getElementById(id).innerHTML = html;
+        if (typeof callback === "function") callback();
+      } catch (err) {
+        console.error(`${path} 불러오기 실패:`, err);
+      }
+    }
+
+    function bindMenuToggle() {
+      const menuToggle = document.getElementById("menuToggle");
+      const mainNav = document.getElementById("mainNav");
+      if (menuToggle && mainNav) {
+        menuToggle.addEventListener("click", () => {
+          mainNav.classList.toggle("active");
+        });
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadComponent("header-include", "/components/header.html", bindMenuToggle);
+      loadComponent("footer-include", "/components/footer.html");
+      loadComponent("floating-button-include", "/components/floating-button.html");
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.fade-item').forEach(el => observer.observe(el));
+
+      document.querySelectorAll(".type-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const type = btn.dataset.type;
+          document.querySelectorAll(".type-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          document.querySelectorAll(".type-image").forEach(img => img.classList.remove("visible"));
+          document.querySelector(`.type-${type}`).classList.add("visible");
+        });
+      });
+    });
+  </script>
+</body>
+</html>
